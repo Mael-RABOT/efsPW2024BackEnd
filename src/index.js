@@ -15,6 +15,12 @@ const {
     getChallengeByUserId,
 } = require("./querry/challenge");
 
+const {
+    getAppointmentById,
+    getAllAppointments,
+    createAppointment,
+} = require("./querry/appointment");
+
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors())
@@ -49,6 +55,32 @@ app.get('/challenges', (req, res) => {
     const userId = 1 // Demo User
 
     getChallengeByUserId(res, userId)
+})
+
+app.get('/appointment/:id', (req, res) => {
+    const appointmentId = req.params.id
+
+    getAppointmentById(res, appointmentId)
+})
+
+app.get('/appointments', (req, res) => {
+    getAllAppointments(res)
+})
+
+app.post('/appointment', (req, res) => {
+    const appointment = req.body
+
+    console.log("Received appointment request:", appointment);
+
+    const date = appointment.date
+    const donation_type = appointment.donation_type
+
+    if (!date || !donation_type) {
+        console.log("Bad request - Missing date or donation_type");
+        return res.status(400).send('Bad Request')
+    }
+
+    createAppointment(res, date, donation_type)
 })
 
 app.use("*", (req, res) => {
